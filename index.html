@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Capturing from Webcam</title>
+    </head>
+    <body>
+        <form id="voter-information" method="POST" action="" >
+            <label for="firstname">Your Firstname</label>
+            <input id="firstname" type="text">
+            <label for="surname">Your Surname</label>
+            <input id="surname" type="text">
+            <label for="image">Image</label>
+            <input id="image" type="image">
+            <input type="submit">
+        </form>
+        <!-- Stream video via webcam-->
+        <div class="video-wrap">
+            <video id = "video" playsinline autoplay></video>
+        </div>
+
+        <!-- Trigger canvas web API-->
+        <div class="controller">
+            <button id="snap">Capture</button>
+        </div>
+
+        <!-- Webcam video snapshot-->
+        <canvas id = "canvas" width="300" height="300"></canvas>
+
+
+        <script>
+            'use strict';
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const snap = document.getElementById('snap');
+            const errorMsgElement = document.getElementById('span#ErrorMsg');
+            const image = document.getElementById('image');
+
+
+            const constraints ={
+                audio:false,
+                video:{
+                    width:300, 
+                    height:300
+                }
+            };
+
+            //access webcam
+            async function init(){
+                try{
+                    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+                    handleSuccess(stream);
+                }
+                catch(e){
+                    errorMsgElement.innerHTML = `navigator.getUserMedia.error:${e.toString()}`;
+                }
+            }
+
+            //success
+            function handleSuccess(stream){
+                window.stream = stream;
+                video.srcObject = stream;
+            }
+
+            //load init
+            init();
+
+            //Draw image
+            var context = canvas.getContext('2d');
+            var capture;
+            snap.addEventListener("click", function(){
+                capture = context.drawImage(video, 0, 0, 640, 480);
+            });
+
+            function convertCanvasToImage(aaa) {
+                var image = new Image();
+                image.src = aaa.toDataURL("image/png");
+                return image;
+            }
+
+            convertCanvasToImage(capture);
+        </script>
+    </body>
+</html>
